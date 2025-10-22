@@ -1,0 +1,35 @@
+.cart {
+  position: fixed;
+  bottom: 25px;
+  right: 25px;
+  background: #fff;
+  border-radius: 50%;
+  width: 56px;
+  height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+  cursor: pointer;
+  z-index: 999;
+}
+
+.icon {
+  width: 28px;
+  height: 28px;
+}
+
+.count {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  background: red;
+  color: white;
+  border-radius: 50%;
+  font-size: 12px;
+  width: 18px;
+  height: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}

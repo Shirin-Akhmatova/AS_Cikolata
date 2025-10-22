@@ -1,0 +1,60 @@
+.header {
+  width: 100%;
+  background-color: #1e1e1e;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  color: white;
+  font-family: "Inter", sans-serif;
+  margin: 0;
+  padding: 0;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 1000;
+}
+
+.logoContainer {
+  background-color: #fff;
+  width: 100%;
+  max-width: 480px;
+  height: 159px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
+  margin: 0;
+  padding: 60px 0 0 0;
+
+  @media (max-width: 600px) {
+    padding: 50px 0 0 0;
+  }
+
+  @media (max-width: 400px) {
+    padding: 30px 0 0 0;
+  }
+
+  @media (max-width: 320px) {
+    padding: 30px 0 0 0;
+  }
+}
+
+.logo {
+  width: 100%;
+  height: auto;
+  object-fit: contain;
+  display: block;
+}
+
+.select {
+  align-self: flex-end;
+  margin-top: 20px;
+  margin-right: 10px;
+  background: #333;
+  color: white;
+  border: 1px solid #555;
+  border-radius: 8px;
+  padding: 6px 10px;
+  font-size: 14px;
+  cursor: pointer;
+}

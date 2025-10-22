@@ -1,0 +1,74 @@
+* {
+  box-sizing: border-box;
+}
+
+.container {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding-inline: 25px;
+}
+
+body {
+  overflow-x: hidden;
+  font-family: Montserrat;
+  background: #1e1e1e;
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+html {
+  scroll-behavior: smooth;
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+button {
+  border: none;
+}
+
+a {
+  text-decoration: none;
+}
+
+.mainContent {
+  margin-top: 220px;
+}
+
+@media (max-width: 600px) {
+  .mainContent {
+    margin-top: 220px;
+  }
+}
+
+@media (max-width: 500px) {
+  .mainContent {
+    margin-top: 210px;
+  }
+}
+
+@media (max-width: 400px) {
+  .mainContent {
+    margin-top: 190px;
+  }
+}
+
+@media (max-width: 320px) {
+  .mainContent {
+    margin-top: 180px;
+  }
+}
+
+.goog-te-banner-frame.skiptranslate {
+  display: none !important;
+}
+
+body {
+  top: 0px !important;
+}
+
+#google_translate_element,
+.goog-te-gadget,
+.goog-te-gadget-simple,
+.goog-te-combo {
+  display: none !important;
+}

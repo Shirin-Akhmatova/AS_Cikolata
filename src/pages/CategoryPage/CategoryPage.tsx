@@ -46,6 +46,10 @@ export default function CategoryPage() {
   };
 
   useEffect(() => {
+    console.log("Current allCategories state:", allCategories);
+  }, [allCategories]);
+
+  useEffect(() => {
     setLoading(true);
     fetch("/api/menucategories/")
       .then((res) => res.json())
@@ -54,6 +58,8 @@ export default function CategoryPage() {
         const cat = findCategoryById(data, Number(id));
         if (cat) setCurrentCategory(cat);
         else setError("Категория не найдена");
+
+        setActiveSubcategoryId(null);
       })
       .catch((err) => setError(err.message))
       .finally(() => setLoading(false));
@@ -64,15 +70,20 @@ export default function CategoryPage() {
   if (!currentCategory) return null;
 
   const filterableCategories = ["Горячие напитки", "холодные напитки"];
-  const showSubcategories = filterableCategories.includes(
-    currentCategory.name || ""
-  );
+  const showSubcategories =
+    filterableCategories.includes(currentCategory.name || "") &&
+    currentCategory.subcategories &&
+    currentCategory.subcategories.length > 0;
 
-  const displayedProducts = activeSubcategoryId
-    ? currentCategory.subcategories?.find(
-        (sub) => sub.id === activeSubcategoryId
-      )?.products || []
-    : currentCategory.products;
+  const displayedProducts = showSubcategories
+    ? activeSubcategoryId !== null
+      ? currentCategory.subcategories?.find(
+          (sub) => sub.id === activeSubcategoryId
+        )?.products || []
+      : (currentCategory.subcategories || []).flatMap(
+          (sub) => sub.products || []
+        )
+    : currentCategory.products || [];
 
   const handleSubClick = (subId: number | null, index: number) => {
     setActiveSubcategoryId(subId);
@@ -99,37 +110,36 @@ export default function CategoryPage() {
         {currentCategory.name || currentCategory.title}
       </h1>
 
-      {showSubcategories &&
-        currentCategory.subcategories &&
-        currentCategory.subcategories.length > 0 && (
-          <div className={styles.wrapper} ref={wrapperRef}>
+      {showSubcategories && (
+        <div className={styles.wrapper} ref={wrapperRef}>
+          <button
+            className={`${styles.chip} ${
+              activeSubcategoryId === null ? styles.active : ""
+            }`}
+            onClick={() => handleSubClick(null, 0)}
+            ref={(el) => {
+              if (el) subRefs.current[0] = el;
+            }}
+          >
+            Все
+          </button>
+
+          {(currentCategory.subcategories || []).map((sub, idx) => (
             <button
+              key={sub.id}
               className={`${styles.chip} ${
-                activeSubcategoryId === null ? styles.active : ""
+                activeSubcategoryId === sub.id ? styles.active : ""
               }`}
-              onClick={() => handleSubClick(null, 0)}
+              onClick={() => handleSubClick(sub.id, idx + 1)}
               ref={(el) => {
-                if (el) subRefs.current[0] = el;
+                if (el) subRefs.current[idx + 1] = el;
               }}
             >
-              Все
+              {sub.name || sub.title}
             </button>
-            {currentCategory.subcategories.map((sub, idx) => (
-              <button
-                key={sub.id}
-                className={`${styles.chip} ${
-                  activeSubcategoryId === sub.id ? styles.active : ""
-                }`}
-                onClick={() => handleSubClick(sub.id, idx + 1)}
-                ref={(el) => {
-                  if (el) subRefs.current[idx + 1] = el;
-                }}
-              >
-                {sub.name || sub.title}
-              </button>
-            ))}
-          </div>
-        )}
+          ))}
+        </div>
+      )}
 
       <div className={styles.grid}>
         {displayedProducts && displayedProducts.length > 0 ? (

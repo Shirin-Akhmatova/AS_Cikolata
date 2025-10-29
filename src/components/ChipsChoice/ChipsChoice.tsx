@@ -5,9 +5,9 @@ import BackIcon from "../../assets/images/Frame 23.svg";
 
 interface Category {
   id: number;
-  name?: string;
-  title?: string;
-  subcategories?: Category[];
+  name: string;
+  title: string;
+  subcategories: Category[];
 }
 
 interface Chip {
@@ -28,10 +28,13 @@ const ChipsChoice: React.FC = () => {
   const wrapperRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
+    console.log("Categories state:", categories);
+  }, [categories]);
+
+  useEffect(() => {
     fetch("/api/menucategories/")
       .then((res) => res.json())
       .then((data: Category[]) => {
-        // только верхние категории
         const topCategories = data.filter((cat) =>
           [12, 13, 14, 15].includes(cat.id)
         );

@@ -20,8 +20,12 @@ export default function ProductCard({ product }: ProductCardProps) {
   const { addToCart, removeFromCart, getProductQuantity } = useCart();
   const count = getProductQuantity(product.id);
 
-  const handleIncrement = () => addToCart(product);
+  const handleIncrement = () => addToCart({ ...product, quantity: 1 });
   const handleDecrement = () => removeFromCart(product.id);
+
+  const bottomClass = product.description
+    ? styles.bottom
+    : `${styles.bottom} ${styles.centered}`;
 
   return (
     <div className={styles.card}>
@@ -39,7 +43,7 @@ export default function ProductCard({ product }: ProductCardProps) {
           <p className={styles.description}>{product.description}</p>
         )}
 
-        <div className={styles.bottom}>
+        <div className={bottomClass}>
           <span className={styles.price}>{product.price} сом</span>
 
           <div className={styles.counter}>

@@ -15,7 +15,7 @@ import CartPage from "./pages/CartPage/CartPage";
 function AppContent() {
   const location = useLocation();
 
-  const showCart = location.pathname !== "/cart";
+  const showCart = location.pathname !== "/" && location.pathname !== "/cart";
 
   return (
     <>
@@ -26,6 +26,7 @@ function AppContent() {
           <Route path="/category/:id" element={<CategoryPage />} />
           <Route path="/cart" element={<CartPage />} />
         </Routes>
+
         {showCart && <CartIcon />}
       </div>
     </>

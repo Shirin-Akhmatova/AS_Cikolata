@@ -2,10 +2,16 @@ import React, { useState, useEffect, useRef } from "react";
 import styles from "./ChipsChoice.module.scss";
 import { useNavigate, useLocation } from "react-router-dom";
 import BackIcon from "../../assets/images/Frame 23.svg";
-import { useTranslation } from "react-i18next";
+
+interface Category {
+  id: number;
+  name?: string;
+  title?: string;
+  subcategories?: Category[];
+}
 
 interface Chip {
-  name_key: string;
+  name: string;
   path: string;
   icon?: string;
 }
@@ -13,33 +19,44 @@ interface Chip {
 const ChipsChoice: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { t } = useTranslation();
 
-  const chips: Chip[] = [
-    { name_key: "Главная", path: "/", icon: "back" },
-    { name_key: "home.desserts", path: "/desserts" },
-    { name_key: "home.hotDrinks", path: "/hot" },
-    { name_key: "home.coldDrinks", path: "/cold" },
-    { name_key: "home.breakfasts", path: "/breakfast" },
-  ];
-
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [chips, setChips] = useState<Chip[]>([]);
   const [activeChip, setActiveChip] = useState<string>("");
 
   const chipRefs = useRef<(HTMLButtonElement | null)[]>([]);
   const wrapperRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
-    chipRefs.current = chipRefs.current.slice(0, chips.length);
-  }, [chips.length]);
+    fetch("/api/menucategories/")
+      .then((res) => res.json())
+      .then((data: Category[]) => {
+        // только верхние категории
+        const topCategories = data.filter((cat) =>
+          [12, 13, 14, 15].includes(cat.id)
+        );
+        setCategories(topCategories);
+
+        const chipList: Chip[] = [
+          { name: "Главная", path: "/", icon: "back" },
+          ...topCategories.map((cat) => ({
+            name: cat.name || cat.title || "",
+            path: `/category/${cat.id}`,
+          })),
+        ];
+        setChips(chipList);
+      })
+      .catch((err) => console.error("Ошибка загрузки категорий:", err));
+  }, []);
 
   useEffect(() => {
     const found = chips.find(
       (chip) => chip.path !== "/" && location.pathname.startsWith(chip.path)
     );
     if (found) {
-      setActiveChip(found.name_key);
+      setActiveChip(found.name);
 
-      const idx = chips.findIndex((c) => c.name_key === found.name_key);
+      const idx = chips.findIndex((c) => c.name === found.name);
       if (idx !== -1) scrollToChip(idx);
     } else {
       setActiveChip("");
@@ -66,7 +83,7 @@ const ChipsChoice: React.FC = () => {
       return;
     }
 
-    setActiveChip(chip.name_key);
+    setActiveChip(chip.name);
     navigate(chip.path);
     scrollToChip(index);
   };
@@ -79,25 +96,21 @@ const ChipsChoice: React.FC = () => {
     <div ref={wrapperRef} className={styles.wrapper}>
       {chips.map((chip, index) => (
         <button
-          key={chip.name_key}
+          key={chip.name}
           ref={setRef(index)}
           className={
             chip.icon === "back"
               ? styles.backButton
               : `${styles.chip} ${
-                  activeChip === chip.name_key ? styles.active : ""
+                  activeChip === chip.name ? styles.active : ""
                 }`
           }
           onClick={() => handleClick(chip, index)}
         >
           {chip.icon === "back" ? (
-            <img
-              src={BackIcon}
-              alt={t("home.main")}
-              className={styles.backIcon}
-            />
+            <img src={BackIcon} alt="Главная" className={styles.backIcon} />
           ) : (
-            t(chip.name_key)
+            chip.name
           )}
         </button>
       ))}

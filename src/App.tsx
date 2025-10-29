@@ -7,20 +7,15 @@ import {
 } from "react-router-dom";
 import Header from "./components/Header/Header";
 import HomePage from "./pages/Home/HomePage";
-import DessertsPage from "./pages/DessertsPage/DessertsPage";
-import HotDrinksPage from "./pages/HotDrinksPage/HotDrinksPage";
-import ColdDrinksPage from "./pages/ColdDrinksPage/ColdDrinksPage";
-import BreakfastPage from "./pages/BreakfastPage/BreakfastPage";
 import CartIcon from "./components/CartIcon/CartIcon";
 import { CartProvider } from "./components/CartContext/CartContext";
+import CategoryPage from "./pages/CategoryPage/CategoryPage";
+import CartPage from "./pages/CartPage/CartPage";
 
 function AppContent() {
   const location = useLocation();
 
-  const showCartPaths = ["/desserts", "/hot", "/cold", "/breakfast"];
-  const showCart = showCartPaths.some((path) =>
-    location.pathname.startsWith(path)
-  );
+  const showCart = location.pathname !== "/cart";
 
   return (
     <>
@@ -28,10 +23,8 @@ function AppContent() {
       <div className="mainContent">
         <Routes>
           <Route path="/" element={<HomePage />} />
-          <Route path="/desserts" element={<DessertsPage />} />
-          <Route path="/hot" element={<HotDrinksPage />} />
-          <Route path="/cold" element={<ColdDrinksPage />} />
-          <Route path="/breakfast" element={<BreakfastPage />} />
+          <Route path="/category/:id" element={<CategoryPage />} />
+          <Route path="/cart" element={<CartPage />} />
         </Routes>
         {showCart && <CartIcon />}
       </div>

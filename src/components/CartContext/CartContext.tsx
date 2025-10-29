@@ -1,8 +1,10 @@
-import React, { createContext, useContext, useState } from "react";
+import React, { createContext, useContext, useState, useEffect } from "react";
 
-interface CartItem {
+export interface CartItem {
   id: number;
   name: string;
+  title?: string;
+  image?: string;
   price?: number;
   quantity: number;
 }
@@ -10,7 +12,9 @@ interface CartItem {
 interface CartContextType {
   cartItems: CartItem[];
   addToCart: (item: CartItem) => void;
+  removeFromCart: (itemId: number) => void;
   totalCount: number;
+  getProductQuantity: (id: number) => number;
 }
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
@@ -18,7 +22,14 @@ const CartContext = createContext<CartContextType | undefined>(undefined);
 export const CartProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
-  const [cartItems, setCartItems] = useState<CartItem[]>([]);
+  const [cartItems, setCartItems] = useState<CartItem[]>(() => {
+    const saved = localStorage.getItem("cartItems");
+    return saved ? JSON.parse(saved) : [];
+  });
+
+  useEffect(() => {
+    localStorage.setItem("cartItems", JSON.stringify(cartItems));
+  }, [cartItems]);
 
   const addToCart = (item: CartItem) => {
     setCartItems((prev) => {
@@ -32,10 +43,36 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({
     });
   };
 
+  const removeFromCart = (itemId: number) => {
+    setCartItems((prev) => {
+      const existing = prev.find((i) => i.id === itemId);
+      if (!existing) return prev;
+      if (existing.quantity === 1) {
+        return prev.filter((i) => i.id !== itemId);
+      }
+      return prev.map((i) =>
+        i.id === itemId ? { ...i, quantity: i.quantity - 1 } : i
+      );
+    });
+  };
+
+  const getProductQuantity = (id: number) => {
+    const item = cartItems.find((i) => i.id === id);
+    return item ? item.quantity : 0;
+  };
+
   const totalCount = cartItems.reduce((sum, i) => sum + i.quantity, 0);
 
   return (
-    <CartContext.Provider value={{ cartItems, addToCart, totalCount }}>
+    <CartContext.Provider
+      value={{
+        cartItems,
+        addToCart,
+        removeFromCart,
+        totalCount,
+        getProductQuantity,
+      }}
+    >
       {children}
     </CartContext.Provider>
   );

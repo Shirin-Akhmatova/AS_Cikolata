@@ -10,6 +10,7 @@ export interface Product {
   description?: string | null;
   image: string;
   price: number;
+  size?: string;
 }
 
 interface ProductCardProps {
@@ -42,6 +43,8 @@ export default function ProductCard({ product }: ProductCardProps) {
         {product.description && (
           <p className={styles.description}>{product.description}</p>
         )}
+
+        {product.size && <p className={styles.size}>{product.size}</p>}
 
         <div className={bottomClass}>
           <span className={styles.price}>{product.price} сом</span>

@@ -3,6 +3,7 @@ import { useParams } from "react-router-dom";
 import ChipsChoice from "../../components/ChipsChoice/ChipsChoice";
 import ProductCard from "../../components/ProductCard/ProductCard";
 import styles from "./CategoryPage.module.scss";
+import { useLanguage } from "../../components/LanguageContext/LanguageContext";
 
 interface Product {
   id: number;
@@ -11,25 +12,33 @@ interface Product {
   description?: string;
   image: string;
   price: number;
+  size?: string; // <-- добавлено
 }
 
 interface Category {
   id: number;
-  name: string;
+  name?: string;
   title?: string;
   subcategories?: Category[];
-  products: Product[];
+  products?: Product[];
 }
+
+const formatTurkishPlural = (name: string, language: string) => {
+  if (language === "tr") {
+    return name.replace(/'/g, "");
+  }
+  return name;
+};
 
 export default function CategoryPage() {
   const { id } = useParams<{ id: string }>();
+  const { language } = useLanguage();
+
   const [allCategories, setAllCategories] = useState<Category[]>([]);
   const [currentCategory, setCurrentCategory] = useState<Category | null>(null);
   const [activeSubcategoryId, setActiveSubcategoryId] = useState<number | null>(
     null
   );
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
 
   const wrapperRef = useRef<HTMLDivElement | null>(null);
   const subRefs = useRef<HTMLButtonElement[]>([]);
@@ -46,34 +55,31 @@ export default function CategoryPage() {
   };
 
   useEffect(() => {
-    console.log("Current allCategories state:", allCategories);
-  }, [allCategories]);
+    console.log(allCategories);
+  });
 
   useEffect(() => {
-    setLoading(true);
-    fetch("/api/menucategories/")
-      .then((res) => res.json())
+    fetch(`/api/menucategories/?lang=${language}`)
+      .then((res) => {
+        if (!res.ok) throw new Error("Ошибка загрузки категорий");
+        return res.json();
+      })
       .then((data: Category[]) => {
         setAllCategories(data);
         const cat = findCategoryById(data, Number(id));
-        if (cat) setCurrentCategory(cat);
-        else setError("Категория не найдена");
-
+        setCurrentCategory(cat || null);
         setActiveSubcategoryId(null);
       })
-      .catch((err) => setError(err.message))
-      .finally(() => setLoading(false));
-  }, [id]);
+      .catch((err) => {
+        console.error(err);
+        setCurrentCategory(null);
+      });
+  }, [id, language]);
 
-  if (loading) return <p className={styles.loading}>Загрузка...</p>;
-  if (error) return <p className={styles.error}>Ошибка: {error}</p>;
   if (!currentCategory) return null;
 
-  const filterableCategories = ["Горячие напитки", "холодные напитки"];
   const showSubcategories =
-    filterableCategories.includes(currentCategory.name || "") &&
-    currentCategory.subcategories &&
-    currentCategory.subcategories.length > 0;
+    currentCategory.subcategories && currentCategory.subcategories.length > 0;
 
   const displayedProducts = showSubcategories
     ? activeSubcategoryId !== null
@@ -96,7 +102,6 @@ export default function CategoryPage() {
         const btnWidth = btn.offsetWidth;
         const btnLeft = btn.offsetLeft;
         const scrollTo = btnLeft - wrapperWidth / 2 + btnWidth / 2;
-
         wrapper.scrollTo({ left: scrollTo, behavior: "smooth" });
       }
     });
@@ -107,7 +112,9 @@ export default function CategoryPage() {
       <ChipsChoice />
 
       <h1 className={styles.title}>
-        {currentCategory.name || currentCategory.title}
+        {currentCategory.name
+          ? formatTurkishPlural(currentCategory.name, language)
+          : currentCategory.title || ""}
       </h1>
 
       {showSubcategories && (
@@ -121,7 +128,7 @@ export default function CategoryPage() {
               if (el) subRefs.current[0] = el;
             }}
           >
-            Все
+            {language === "tr" ? "Tümü" : "Все"}
           </button>
 
           {(currentCategory.subcategories || []).map((sub, idx) => (
@@ -135,30 +142,29 @@ export default function CategoryPage() {
                 if (el) subRefs.current[idx + 1] = el;
               }}
             >
-              {sub.name || sub.title}
+              {sub.name
+                ? formatTurkishPlural(sub.name, language)
+                : sub.title || "Без названия"}
             </button>
           ))}
         </div>
       )}
 
-      <div className={styles.grid}>
-        {displayedProducts && displayedProducts.length > 0 ? (
-          displayedProducts.map((p) => (
-            <ProductCard
-              key={p.id}
-              product={{
-                id: p.id,
-                name: p.name || p.title || "",
-                title: p.title,
-                description: p.description,
-                image: p.image,
-                price: p.price,
-              }}
-            />
-          ))
-        ) : (
-          <p className={styles.noProducts}>Нет продуктов в этой категории.</p>
-        )}
+      <div className={styles.column}>
+        {displayedProducts.map((p) => (
+          <ProductCard
+            key={p.id}
+            product={{
+              id: p.id,
+              name: p.name || p.title || "",
+              title: p.title,
+              description: p.description,
+              image: p.image,
+              price: p.price,
+              size: p.size,
+            }}
+          />
+        ))}
       </div>
     </div>
   );

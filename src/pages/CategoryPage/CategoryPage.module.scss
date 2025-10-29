@@ -55,9 +55,9 @@
   font-weight: 600;
 }
 
-.grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+.column {
+  display: flex;
+  flex-direction: column;
   gap: 20px;
   width: 100%;
   max-width: 1200px;

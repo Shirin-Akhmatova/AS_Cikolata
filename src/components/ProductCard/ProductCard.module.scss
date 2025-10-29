@@ -83,7 +83,13 @@
   }
 }
 
- .centered {
+.centered {
   margin-top: 0;
   justify-content: space-between;
+}
+
+.size {
+  font-size: 14px;
+  color: #ccc;
+  margin: 4px 0;
 }

@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useTranslation } from "react-i18next";
 import styles from "./HomePage.module.scss";
+import { useLanguage } from "../../components/LanguageContext/LanguageContext";
 
 interface ApiCategory {
   id: number;
@@ -14,45 +14,36 @@ interface ApiCategory {
 
 export default function HomePage() {
   const navigate = useNavigate();
-  const { i18n } = useTranslation();
-  const [language, setLanguage] = useState(i18n.language);
-
+  const { language, setLanguage } = useLanguage();
   const [categories, setCategories] = useState<ApiCategory[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
-  const changeLanguage = (lng: string) => {
-    i18n.changeLanguage(lng);
-    setLanguage(lng);
-    localStorage.setItem("language", lng);
-  };
 
   useEffect(() => {
-    fetch("/api/menucategories/")
+    fetch(`/api/menucategories/?lang=${language}`)
       .then((res) => {
         if (!res.ok) throw new Error("Ошибка загрузки категорий");
         return res.json();
       })
       .then((data: ApiCategory[]) => {
-        // Показываем только верхние категории (Десерты, Горячие напитки, Холодные напитки, Завтраки)
         const topCategories = data.filter((cat) =>
           [12, 13, 14, 15].includes(cat.id)
         );
-        setCategories(topCategories);
-      })
-      .catch((err) => setError(err.message))
-      .finally(() => setLoading(false));
-  }, []);
 
-  if (loading) return <p className={styles.loading}>Загрузка...</p>;
-  if (error) return <p className={styles.error}>Ошибка: {error}</p>;
+        const order = [12, 13, 14, 15];
+        const orderedCategories = topCategories.sort(
+          (a, b) => order.indexOf(a.id) - order.indexOf(b.id)
+        );
+
+        setCategories(orderedCategories);
+      })
+      .catch((err) => console.error(err));
+  }, [language]);
 
   return (
     <div className={styles.home}>
       <div className={styles.languageWrapper}>
         <select
           value={language}
-          onChange={(e) => changeLanguage(e.target.value)}
+          onChange={(e) => setLanguage(e.target.value)}
           className={styles.select}
         >
           <option value="ru">RU</option>
@@ -60,7 +51,7 @@ export default function HomePage() {
         </select>
       </div>
 
-      <div className={styles.cardsWrapper}>
+      <div className={styles.column}>
         {categories.map((cat) => (
           <div
             key={cat.id}

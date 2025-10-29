@@ -11,10 +11,10 @@ import CartIcon from "./components/CartIcon/CartIcon";
 import { CartProvider } from "./components/CartContext/CartContext";
 import CategoryPage from "./pages/CategoryPage/CategoryPage";
 import CartPage from "./pages/CartPage/CartPage";
+import { LanguageProvider } from "./components/LanguageContext/LanguageContext";
 
 function AppContent() {
   const location = useLocation();
-
   const showCart = location.pathname !== "/" && location.pathname !== "/cart";
 
   return (
@@ -35,11 +35,13 @@ function AppContent() {
 
 function App() {
   return (
-    <CartProvider>
-      <Router>
-        <AppContent />
-      </Router>
-    </CartProvider>
+    <LanguageProvider>
+      <CartProvider>
+        <Router>
+          <AppContent />
+        </Router>
+      </CartProvider>
+    </LanguageProvider>
   );
 }
 

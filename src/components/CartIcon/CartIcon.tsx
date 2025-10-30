@@ -8,14 +8,30 @@ const CartIcon: React.FC = () => {
   const { totalCount } = useCart();
   const navigate = useNavigate();
   const [isOpen, setIsOpen] = useState(false);
+  const [isNearBottom, setIsNearBottom] = useState(false);
 
   useEffect(() => {
     setIsOpen(totalCount > 0);
   }, [totalCount]);
 
+  useEffect(() => {
+    const handleScroll = () => {
+      const scrollPosition = window.innerHeight + window.scrollY;
+      const documentHeight = document.body.offsetHeight;
+
+      // если мы в пределах 150px от конца страницы
+      setIsNearBottom(scrollPosition >= documentHeight - 150);
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
   return (
     <div
-      className={`${styles.cart} ${isOpen ? styles.expanded : ""}`}
+      className={`${styles.cart} ${isOpen ? styles.expanded : ""} ${
+        isNearBottom ? styles.lifted : ""
+      }`}
       onClick={() => navigate("/cart")}
     >
       <img src={CartImg} alt="Корзина" className={styles.icon} />

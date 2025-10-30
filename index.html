@@ -12,7 +12,33 @@
       rel="stylesheet"
     />
     <title>Çikolata AS</title>
+
+    <script>
+      document.addEventListener("gesturestart", function (e) {
+        e.preventDefault();
+      });
+
+      window.addEventListener(
+        "wheel",
+        function (e) {
+          if (e.ctrlKey) {
+            e.preventDefault();
+          }
+        },
+        { passive: false }
+      );
+
+      window.addEventListener("keydown", function (e) {
+        if (
+          (e.ctrlKey || e.metaKey) &&
+          (e.key === "+" || e.key === "-" || e.key === "=")
+        ) {
+          e.preventDefault();
+        }
+      });
+    </script>
   </head>
+
   <body>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>

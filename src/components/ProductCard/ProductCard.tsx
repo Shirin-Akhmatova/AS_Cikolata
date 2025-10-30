@@ -19,10 +19,12 @@ interface ProductCardProps {
 
 export default function ProductCard({ product }: ProductCardProps) {
   const { addToCart, removeFromCart, getProductQuantity } = useCart();
-  const count = getProductQuantity(product.id);
+
+  // передаём size, чтобы правильно считать количество
+  const count = getProductQuantity(product.id, product.size);
 
   const handleIncrement = () => addToCart({ ...product, quantity: 1 });
-  const handleDecrement = () => removeFromCart(product.id);
+  const handleDecrement = () => removeFromCart(product.id, product.size);
 
   const bottomClass = product.description
     ? styles.bottom

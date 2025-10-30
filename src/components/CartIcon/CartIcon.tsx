@@ -20,27 +20,24 @@ const CartIcon: React.FC = () => {
 
   useEffect(() => {
     const handleScroll = () => {
-      const scrollY = window.scrollY;
-      const scrollPosition = window.innerHeight + scrollY;
-      const documentHeight = document.body.offsetHeight;
+      const scrollPosition = window.innerHeight + window.scrollY;
+      const documentHeight = document.documentElement.scrollHeight;
 
-      // Определяем направление прокрутки
-      if (scrollY > lastScrollY.current) {
+      setIsNearBottom(scrollPosition >= documentHeight - 100);
+
+      if (window.scrollY > lastScrollY.current) {
         setScrollDir("down");
-      } else if (scrollY < lastScrollY.current) {
+      } else if (window.scrollY < lastScrollY.current) {
         setScrollDir("up");
       }
-      lastScrollY.current = scrollY;
-
-      // Проверяем, близко ли к низу
-      setIsNearBottom(scrollPosition >= documentHeight - 150);
+      lastScrollY.current = window.scrollY;
     };
 
     window.addEventListener("scroll", handleScroll);
+    handleScroll();
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  // Корзина поднимается внизу, но если пользователь скроллит вверх — опускается обратно
   const shouldLift = isNearBottom && scrollDir !== "up";
 
   return (

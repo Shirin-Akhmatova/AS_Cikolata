@@ -19,7 +19,6 @@ const CartIcon: React.FC = () => {
       const scrollPosition = window.innerHeight + window.scrollY;
       const documentHeight = document.body.offsetHeight;
 
-      // если мы в пределах 150px от конца страницы
       setIsNearBottom(scrollPosition >= documentHeight - 150);
     };
 

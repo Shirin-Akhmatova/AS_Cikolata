@@ -14,24 +14,63 @@
   display: flex;
   justify-content: flex-end;
   margin: 0 0 20px 0;
+  position: relative;
+  z-index: 100; // чтобы не перекрывалась карточками
+}
 
-  .select {
-    background-color: #fff;
-    color: #000;
-    border: 1px solid #fff;
-    border-radius: 10px;
-    padding: 6px 10px;
-    font-size: 14px;
-    font-weight: 500;
-    cursor: pointer;
+.languageSelector {
+  position: relative;
+}
 
-    option {
-      background-color: #fff;
-      color: #000;
-    }
-    option:hover {
-      background-color: #777777;
-    }
+.languageButton {
+  background-color: #fff;
+  color: #000;
+  border: 1px solid #fff;
+  border-radius: 10px;
+  padding: 6px 10px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: background 0.3s;
+
+  &:hover {
+    background-color: #f0f0f0;
+  }
+}
+
+.arrow {
+  width: 14px;
+  height: 14px;
+  transition: transform 0.3s ease;
+}
+
+.open {
+  transform: rotate(180deg);
+}
+
+.dropdown {
+  position: absolute;
+  top: 110%;
+  right: 7px;
+  background-color: #fff;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+.option {
+  padding: 8px 12px;
+  font-size: 14px;
+  color: #000;
+  cursor: pointer;
+  transition: background 0.25s ease;
+
+  &:hover {
+    background-color: #f2f2f2;
   }
 }
 

@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import styles from "./HomePage.module.scss";
 import { useLanguage } from "../../components/LanguageContext/LanguageContext";
+import ArrowDown from "../../assets/images/Vector 4.svg";
 
 interface ApiCategory {
   id: number;
@@ -14,6 +15,7 @@ interface ApiCategory {
 
 export default function HomePage() {
   const navigate = useNavigate();
+  const [isOpen, setIsOpen] = useState(false);
   const { language, setLanguage } = useLanguage();
   const [categories, setCategories] = useState<ApiCategory[]>([]);
 
@@ -41,14 +43,42 @@ export default function HomePage() {
   return (
     <div className={styles.home}>
       <div className={styles.languageWrapper}>
-        <select
-          value={language}
-          onChange={(e) => setLanguage(e.target.value)}
-          className={styles.select}
-        >
-          <option value="ru">RU</option>
-          <option value="tr">TR</option>
-        </select>
+        <div className={styles.languageSelector}>
+          <button
+            className={styles.languageButton}
+            onClick={() => setIsOpen((prev) => !prev)}
+          >
+            {language.toUpperCase()}
+            <img
+              src={ArrowDown}
+              alt="Arrow down"
+              className={`${styles.arrow} ${isOpen ? styles.open : ""}`}
+            />
+          </button>
+
+          {isOpen && (
+            <div className={styles.dropdown}>
+              <div
+                className={styles.option}
+                onClick={() => {
+                  setLanguage("ru");
+                  setIsOpen(false);
+                }}
+              >
+                RU
+              </div>
+              <div
+                className={styles.option}
+                onClick={() => {
+                  setLanguage("tr");
+                  setIsOpen(false);
+                }}
+              >
+                TR
+              </div>
+            </div>
+          )}
+        </div>
       </div>
 
       <div className={styles.column}>

@@ -42,10 +42,6 @@
   font-weight: 500;
   cursor: pointer;
   transition: all 0.25s ease;
-
-  &:hover {
-    background: rgba(255, 255, 255, 0.15);
-  }
 }
 
 .active {

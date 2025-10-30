@@ -8,14 +8,15 @@ export interface CartItem {
   image?: string;
   price?: number;
   quantity: number;
+  size?: string;
 }
 
 interface CartContextType {
   cartItems: CartItem[];
   addToCart: (item: CartItem) => void;
-  removeFromCart: (itemId: number) => void;
+  removeFromCart: (itemId: number, size?: string) => void;
   totalCount: number;
-  getProductQuantity: (id: number) => number;
+  getProductQuantity: (id: number, size?: string) => number;
 }
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
@@ -34,31 +35,39 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({
 
   const addToCart = (item: CartItem) => {
     setCartItems((prev) => {
-      const existing = prev.find((i) => i.id === item.id);
+      const existing = prev.find(
+        (i) => i.id === item.id && i.size === item.size
+      );
       if (existing) {
         return prev.map((i) =>
-          i.id === item.id ? { ...i, quantity: i.quantity + 1 } : i
+          i.id === item.id && i.size === item.size
+            ? { ...i, quantity: i.quantity + 1 }
+            : i
         );
       }
       return [...prev, { ...item, quantity: 1 }];
     });
   };
 
-  const removeFromCart = (itemId: number) => {
+  const removeFromCart = (itemId: number, size?: string) => {
     setCartItems((prev) => {
-      const existing = prev.find((i) => i.id === itemId);
+      const existing = prev.find((i) => i.id === itemId && i.size === size);
       if (!existing) return prev;
+
       if (existing.quantity === 1) {
-        return prev.filter((i) => i.id !== itemId);
+        return prev.filter((i) => !(i.id === itemId && i.size === size));
       }
+
       return prev.map((i) =>
-        i.id === itemId ? { ...i, quantity: i.quantity - 1 } : i
+        i.id === itemId && i.size === size
+          ? { ...i, quantity: i.quantity - 1 }
+          : i
       );
     });
   };
 
-  const getProductQuantity = (id: number) => {
-    const item = cartItems.find((i) => i.id === id);
+  const getProductQuantity = (id: number, size?: string) => {
+    const item = cartItems.find((i) => i.id === id && i.size === size);
     return item ? item.quantity : 0;
   };
 

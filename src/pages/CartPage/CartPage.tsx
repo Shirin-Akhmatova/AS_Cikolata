@@ -42,11 +42,14 @@ export default function CartPage() {
         <p className={styles.empty}>{t.emptyCart}</p>
       ) : (
         <div className={styles.list}>
-          {cartItems.map((item) => {
-            const count = getProductQuantity(item.id);
+          {cartItems.map((item, index) => {
+            const count = getProductQuantity(item.id, item.size);
 
             return (
-              <div key={item.id} className={cardStyles.card}>
+              <div
+                key={`${item.id}-${item.size || "default"}-${index}`}
+                className={cardStyles.card}
+              >
                 <img
                   src={item.image || "/fallback-image.png"}
                   alt={item.title || item.name}
@@ -63,6 +66,12 @@ export default function CartPage() {
                     <p className={cardStyles.description}>{item.description}</p>
                   )}
 
+                  {item.size && (
+                    <p className={cardStyles.size}>
+                      <b>{item.size}</b>
+                    </p>
+                  )}
+
                   <div className={cardStyles.bottom}>
                     <span className={cardStyles.price}>{item.price} сом</span>
 
@@ -71,7 +80,7 @@ export default function CartPage() {
                         src={Decrement}
                         alt="Decrement"
                         className={cardStyles.btn}
-                        onClick={() => removeFromCart(item.id)}
+                        onClick={() => removeFromCart(item.id, item.size)}
                       />
                       <span>{count}</span>
                       <img

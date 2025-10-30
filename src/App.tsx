@@ -16,10 +16,11 @@ import { LanguageProvider } from "./components/LanguageContext/LanguageContext";
 function AppContent() {
   const location = useLocation();
   const showCart = location.pathname !== "/" && location.pathname !== "/cart";
+  const showChips = location.pathname.startsWith("/category");
 
   return (
     <>
-      <Header />
+      <Header showChips={showChips} />
       <div className="mainContent">
         <Routes>
           <Route path="/" element={<HomePage />} />

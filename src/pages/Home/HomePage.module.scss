@@ -1,7 +1,7 @@
 .home {
   display: flex;
   flex-direction: column;
-  align-items: flex-start; // <-- было center, меняем на flex-start
+  align-items: flex-start;
   padding: 0 16px 40px 16px;
   background-color: #1e1e1e;
   color: #fff;
@@ -15,7 +15,7 @@
   justify-content: flex-end;
   margin: 0 0 20px 0;
   position: relative;
-  z-index: 100; // чтобы не перекрывалась карточками
+  z-index: 100;
 }
 
 .languageSelector {
@@ -77,7 +77,7 @@
 .column {
   display: flex;
   flex-direction: column;
-  gap: 20px; // <-- расстояние между карточками
+  gap: 20px;
   width: 100%;
   max-width: 1200px;
 }

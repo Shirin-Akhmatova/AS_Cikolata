@@ -11,7 +11,7 @@ interface Product {
   description?: string;
   image: string;
   price: number;
-  size?: string; // <-- добавлено
+  size?: string;
 }
 
 interface Category {

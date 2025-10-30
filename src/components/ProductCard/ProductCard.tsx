@@ -10,7 +10,7 @@ export interface Product {
   description?: string | null;
   image: string;
   price: number;
-  size?: string; // может быть undefined
+  size?: string;
 }
 
 interface ProductCardProps {

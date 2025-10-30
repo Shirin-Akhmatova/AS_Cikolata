@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { useCart } from "../../components/CartContext/CartContext";
 import { useNavigate } from "react-router-dom";
 import Decrement from "../../assets/images/Frame 9.svg";
@@ -28,8 +29,11 @@ export default function CartPage() {
     useCart();
   const navigate = useNavigate();
   const { language } = useLanguage();
-
   const t = translations[language] || translations["ru"];
+
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }, []);
 
   return (
     <div className={styles.cartPage}>

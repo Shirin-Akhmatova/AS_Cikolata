@@ -34,32 +34,43 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({
   }, [cartItems]);
 
   const addToCart = (item: CartItem) => {
+    const itemSize = item.size || "default";
+
     setCartItems((prev) => {
       const existing = prev.find(
-        (i) => i.id === item.id && i.size === item.size
+        (i) => i.id === item.id && (i.size || "default") === itemSize
       );
+
       if (existing) {
         return prev.map((i) =>
-          i.id === item.id && i.size === item.size
+          i.id === item.id && (i.size || "default") === itemSize
             ? { ...i, quantity: i.quantity + 1 }
             : i
         );
       }
-      return [...prev, { ...item, quantity: 1 }];
+
+      return [...prev, { ...item, quantity: 1, size: itemSize }];
     });
   };
 
   const removeFromCart = (itemId: number, size?: string) => {
+    const itemSize = size || "default";
+
     setCartItems((prev) => {
-      const existing = prev.find((i) => i.id === itemId && i.size === size);
+      const existing = prev.find(
+        (i) => i.id === itemId && (i.size || "default") === itemSize
+      );
+
       if (!existing) return prev;
 
       if (existing.quantity === 1) {
-        return prev.filter((i) => !(i.id === itemId && i.size === size));
+        return prev.filter(
+          (i) => !(i.id === itemId && (i.size || "default") === itemSize)
+        );
       }
 
       return prev.map((i) =>
-        i.id === itemId && i.size === size
+        i.id === itemId && (i.size || "default") === itemSize
           ? { ...i, quantity: i.quantity - 1 }
           : i
       );
@@ -67,7 +78,10 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({
   };
 
   const getProductQuantity = (id: number, size?: string) => {
-    const item = cartItems.find((i) => i.id === id && i.size === size);
+    const itemSize = size || "default";
+    const item = cartItems.find(
+      (i) => i.id === id && (i.size || "default") === itemSize
+    );
     return item ? item.quantity : 0;
   };
 

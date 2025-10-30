@@ -51,7 +51,7 @@ export default function CartPage() {
 
             return (
               <div
-                key={`${item.id}-${item.size || "default"}-${index}`}
+                key={`${item.id}-${item.size ?? ""}-${index}`}
                 className={cardStyles.card}
               >
                 <img

@@ -1,6 +1,5 @@
 import { useEffect, useState, useRef } from "react";
 import { useParams } from "react-router-dom";
-import ChipsChoice from "../../components/ChipsChoice/ChipsChoice";
 import ProductCard from "../../components/ProductCard/ProductCard";
 import styles from "./CategoryPage.module.scss";
 import { useLanguage } from "../../components/LanguageContext/LanguageContext";
@@ -109,8 +108,6 @@ export default function CategoryPage() {
 
   return (
     <div className={styles.page}>
-      <ChipsChoice />
-
       <h1 className={styles.title}>
         {currentCategory.name
           ? formatTurkishPlural(currentCategory.name, language)

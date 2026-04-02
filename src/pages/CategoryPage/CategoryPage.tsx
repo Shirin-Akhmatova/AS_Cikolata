@@ -80,9 +80,14 @@ export default function CategoryPage() {
   const showSubcategories =
     currentCategory.subcategories && currentCategory.subcategories.length > 0;
 
+  const getAllProducts = (cat: Category): Product[] => {
+    const subProducts = cat.subcategories?.flatMap(getAllProducts) || [];
+    return [...(cat.products || []), ...subProducts];
+  };
+
   const displayedProducts =
     activeSubcategoryId === null
-      ? currentCategory.products || []
+      ? getAllProducts(currentCategory)
       : currentCategory.subcategories?.find(
           (sub) => sub.id === activeSubcategoryId,
         )?.products || [];

@@ -55,7 +55,7 @@ export default function CategoryPage() {
 
   useEffect(() => {
     console.log(allCategories);
-  });
+  }, [allCategories]);
 
   useEffect(() => {
     fetch(`/api/menucategories/?lang=${language}`)
@@ -91,6 +91,9 @@ export default function CategoryPage() {
       : currentCategory.subcategories?.find(
           (sub) => sub.id === activeSubcategoryId,
         )?.products || [];
+
+  console.log("CURRENT CATEGORY", currentCategory);
+  console.log("ALL PRODUCTS", getAllProducts(currentCategory));
 
   const handleSubClick = (subId: number | null, index: number) => {
     setActiveSubcategoryId(subId);

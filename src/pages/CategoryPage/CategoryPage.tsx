@@ -22,13 +22,6 @@ interface Category {
   products?: Product[];
 }
 
-const formatTurkishPlural = (name: string, language: string) => {
-  if (language === "tr") {
-    return name.replace(/'/g, "");
-  }
-  return name;
-};
-
 export default function CategoryPage() {
   const { id } = useParams<{ id: string }>();
   const { language } = useLanguage();
@@ -42,6 +35,7 @@ export default function CategoryPage() {
   const wrapperRef = useRef<HTMLDivElement | null>(null);
   const subRefs = useRef<HTMLButtonElement[]>([]);
 
+  // Найти категорию по ID
   const findCategoryById = (data: Category[], id: number): Category | null => {
     for (const cat of data) {
       if (cat.id === id) return cat;
@@ -54,50 +48,46 @@ export default function CategoryPage() {
   };
 
   useEffect(() => {
-    console.log(allCategories);
-  }, [allCategories]);
-
-  useEffect(() => {
     fetch(`/api/menucategories/?lang=${language}`)
-      .then((res) => {
-        if (!res.ok) throw new Error("Ошибка загрузки категорий");
-        return res.json();
-      })
+      .then((res) =>
+        res.ok ? res.json() : Promise.reject("Ошибка загрузки категорий"),
+      )
       .then((data: Category[]) => {
         setAllCategories(data);
         const cat = findCategoryById(data, Number(id));
         setCurrentCategory(cat || null);
         setActiveSubcategoryId(null);
       })
-      .catch((err) => {
-        console.error(err);
-        setCurrentCategory(null);
-      });
+      .catch(console.error);
   }, [id, language]);
 
+  if (!allCategories) return null;
   if (!currentCategory) return null;
 
   const showSubcategories =
     currentCategory.subcategories && currentCategory.subcategories.length > 0;
 
+  // Получить все продукты рекурсивно
   const getAllProducts = (cat: Category): Product[] => {
-    const subProducts = cat.subcategories?.flatMap(getAllProducts) || [];
-    return [...(cat.products || []), ...subProducts];
+    const ownProducts = cat.products || [];
+    const subProducts = (cat.subcategories || []).flatMap(getAllProducts);
+    return [...ownProducts, ...subProducts];
   };
 
+  // Какие продукты отображать
   const displayedProducts =
     activeSubcategoryId === null
       ? getAllProducts(currentCategory)
-      : currentCategory.subcategories?.find(
-          (sub) => sub.id === activeSubcategoryId,
-        )?.products || [];
+      : (() => {
+          const sub = currentCategory.subcategories?.find(
+            (s) => s.id === activeSubcategoryId,
+          );
+          return sub ? getAllProducts(sub) : [];
+        })();
 
-  console.log("CURRENT CATEGORY", currentCategory);
-  console.log("ALL PRODUCTS", getAllProducts(currentCategory));
-
+  // Скролл к выбранной подкатегории
   const handleSubClick = (subId: number | null, index: number) => {
     setActiveSubcategoryId(subId);
-
     requestAnimationFrame(() => {
       const wrapper = wrapperRef.current;
       const btn = subRefs.current[index];
@@ -114,17 +104,14 @@ export default function CategoryPage() {
   return (
     <div className={styles.page}>
       <h1 className={styles.title}>
-        {currentCategory.name
-          ? formatTurkishPlural(currentCategory.name, language)
-          : currentCategory.title || ""}
+        {currentCategory.name || currentCategory.title || ""}
       </h1>
 
+      {/* Чипсы для подкатегорий */}
       {showSubcategories && (
         <div className={styles.wrapper} ref={wrapperRef}>
           <button
-            className={`${styles.chip} ${
-              activeSubcategoryId === null ? styles.active : ""
-            }`}
+            className={`${styles.chip} ${activeSubcategoryId === null ? styles.active : ""}`}
             onClick={() => handleSubClick(null, 0)}
             ref={(el) => {
               if (el) subRefs.current[0] = el;
@@ -136,22 +123,19 @@ export default function CategoryPage() {
           {(currentCategory.subcategories || []).map((sub, idx) => (
             <button
               key={sub.id}
-              className={`${styles.chip} ${
-                activeSubcategoryId === sub.id ? styles.active : ""
-              }`}
+              className={`${styles.chip} ${activeSubcategoryId === sub.id ? styles.active : ""}`}
               onClick={() => handleSubClick(sub.id, idx + 1)}
               ref={(el) => {
                 if (el) subRefs.current[idx + 1] = el;
               }}
             >
-              {sub.name
-                ? formatTurkishPlural(sub.name, language)
-                : sub.title || "Без названия"}
+              {sub.name || sub.title || "Без названия"}
             </button>
           ))}
         </div>
       )}
 
+      {/* Продукты */}
       <div className={styles.column}>
         {displayedProducts.map((p) => (
           <ProductCard

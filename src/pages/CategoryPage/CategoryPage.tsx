@@ -36,7 +36,7 @@ export default function CategoryPage() {
   const [allCategories, setAllCategories] = useState<Category[]>([]);
   const [currentCategory, setCurrentCategory] = useState<Category | null>(null);
   const [activeSubcategoryId, setActiveSubcategoryId] = useState<number | null>(
-    null
+    null,
   );
 
   const wrapperRef = useRef<HTMLDivElement | null>(null);
@@ -80,15 +80,12 @@ export default function CategoryPage() {
   const showSubcategories =
     currentCategory.subcategories && currentCategory.subcategories.length > 0;
 
-  const displayedProducts = showSubcategories
-    ? activeSubcategoryId !== null
-      ? currentCategory.subcategories?.find(
-          (sub) => sub.id === activeSubcategoryId
-        )?.products || []
-      : (currentCategory.subcategories || []).flatMap(
-          (sub) => sub.products || []
-        )
-    : currentCategory.products || [];
+  const displayedProducts =
+    activeSubcategoryId === null
+      ? currentCategory.products || []
+      : currentCategory.subcategories?.find(
+          (sub) => sub.id === activeSubcategoryId,
+        )?.products || [];
 
   const handleSubClick = (subId: number | null, index: number) => {
     setActiveSubcategoryId(subId);
